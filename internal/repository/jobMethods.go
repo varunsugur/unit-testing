@@ -17,13 +17,15 @@ func (r *Repo) ViewJobDetailsBy(ctx context.Context, jid uint64) (models.Job, er
 	return jobData, nil
 }
 
-func (r *Repo) CreateJob(ctx context.Context, jobData models.Job) (models.Job, error) {
+func (r *Repo) CreateJob(ctx context.Context, jobData models.Job) (models.ResponseJob, error) {
 	result := r.Db.Create(&jobData)
 	if result.Error != nil {
 		log.Info().Err(result.Error).Send()
-		return models.Job{}, errors.New("could not create the jobs")
+		return models.ResponseJob{}, errors.New("could not create the jobs")
 	}
-	return jobData, nil
+	return models.ResponseJob{
+		Id: jobData.ID,
+	}, nil
 }
 
 func (r *Repo) FindAllJobs(ctx context.Context) ([]models.Job, error) {
