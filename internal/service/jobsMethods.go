@@ -22,13 +22,29 @@ func (s *Service) ViewAllJobs(ctx context.Context) ([]models.Job, error) {
 
 }
 
-func (s *Service) AddJobDetails(ctx context.Context, jobData models.Job, cid uint64) (models.Job, error) {
+func (s *Service) AddJobDetails(ctx context.Context, jobData models.NewJob, cid uint64) (models.Job, error) {
 	jobData.Cid = uint(cid)
-	jobData, err := s.UserRepo.CreateJob(ctx, jobData)
+
+	creatJob := models.Job{
+		Cid:             jobData.Cid,
+		Budget:          jobData.Budget,
+		MinNoticePeriod: jobData.MinNoticePeriod,
+		MaxNoticePeriod: jobData.MaxNoticePeriod,
+		JobLocation:     jobData.JobLocation,
+		Technology:      jobData.Technology,
+		Description:     jobData.Description,
+		MinExp:          jobData.MinExp,
+		MaxExp:          jobData.MaxExp,
+		Qualifications:  jobData.Qualifications,
+		Shift:           jobData.Shift,
+		JobType:         jobData.JobType,
+	}
+
+	jobDetails, err := s.UserRepo.CreateJob(ctx, creatJob)
 	if err != nil {
 		return models.Job{}, err
 	}
-	return jobData, nil
+	return jobDetails, nil
 }
 
 func (s *Service) ViewJob(ctx context.Context, cid uint64) ([]models.Job, error) {

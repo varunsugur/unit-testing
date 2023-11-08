@@ -39,7 +39,7 @@ func (h *Handler) AddJobs(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusBadRequest, http.StatusText(http.StatusBadRequest))
 	}
 
-	var jobData models.Job
+	var jobData models.NewJob
 
 	err = json.NewDecoder(c.Request.Body).Decode(&jobData)
 	if err != nil {

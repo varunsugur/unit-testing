@@ -16,31 +16,31 @@ type Job struct {
 	Cid             uint            `json:"cid"`
 	Name            string          `json:"name" validate:"required"`
 	Budget          string          `json:"budget" validate:"required"`
-	MinNoticePeriod string          `json:"min_notice_period" validate:"required"`
-	MaxNoticePeriod string          `json:"max_notice_period" validate:"required"`
-	JobLocation     []Location      `json:"job_location" gorm:"many2many:job_location"`
-	Technology      []Technology    `json:"technology" gorm:"many2many:job_technology"`
+	MinNoticePeriod string          `json:"min_noticePeriod" validate:"required"`
+	MaxNoticePeriod string          `json:"max_noticePeriod" validate:"required"`
+	JobLocation     []Location      `json:"job_location" gorm:"many2many:jobLocation"`
+	Technology      []Technology    `json:"technology" gorm:"many2many:jobTechnology"`
 	Description     string          `json:"description" validate:"required"`
 	MinExp          string          `json:"min_exp" validate:"required"`
 	MaxExp          string          `json:"max_exp" validate:"required"`
-	Qualifications  []Qualification `json:"qualification" gorm:"many2many:job_qualification"`
-	Shift           []Shift         `json:"shift" gorm:"many2many:job_shift"`
+	Qualifications  []Qualification `json:"qualification" gorm:"many2many:jobQualification"`
+	Shift           []Shift         `json:"shift" gorm:"many2many:jobShift"`
 	JobType         string          `json:"job_type" validate:"required"`
 }
 
 type Location struct {
 	gorm.Model
-	Place string `json:"place_name"`
+	Place string `json:"placeName"`
 }
 
 type Technology struct {
 	gorm.Model
-	TechnologyName string `json:"technology_name"`
+	TechnologyName string `json:"technologyName"`
 }
 
 type Qualification struct {
 	gorm.Model
-	QualificationName string `json:"qualification_name"`
+	QualificationName string `json:"qualificationName"`
 }
 
 type Shift struct {
@@ -49,25 +49,8 @@ type Shift struct {
 }
 
 type UserApplication struct {
-	Name    string  `json:"name"`
-	College string  `json:"college"`
-	Jid     uint    `json:"jid"`
-	Job     NeweJob `json:"newjob"`
-}
-
-type NeweJob struct {
-	Company         Company         `json:"-" gorm:"ForeignKey:cid"`
-	Cid             uint            `json:"cid"`
-	Name            string          `json:"name" validate:"required"`
-	Budget          string          `json:"budget" validate:"required"`
-	MinNoticePeriod string          `json:"min_notice_period" validate:"required"`
-	MaxNoticePeriod string          `json:"max_notice_period" validate:"required"`
-	JobLocation     []Location      `json:"job_location" gorm:"many2many:job_location"`
-	Technology      []Technology    `json:"technology" gorm:"many2many:job_technology"`
-	Description     string          `json:"description" validate:"required"`
-	MinExp          string          `json:"min_exp" validate:"required"`
-	MaxExp          string          `json:"max_exp" validate:"required"`
-	Qualifications  []Qualification `json:"qualification" gorm:"many2many:job_qualification"`
-	Shift           []Shift         `json:"shift" gorm:"many2many:job_shift"`
-	JobType         string          `json:"job_type" validate:"required"`
+	Name    string `json:"name"`
+	College string `json:"college"`
+	Jid     uint   `json:"jid"`
+	Job     NewJob `json:"newjob"`
 }

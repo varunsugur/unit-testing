@@ -21,7 +21,7 @@ type UserService interface {
 	ViewCompanyDetail(ctx context.Context, cid uint64) (models.Company, error)
 	ViewJob(ctx context.Context, cid uint64) ([]models.Job, error)
 
-	AddJobDetails(ctx context.Context, jobData models.Job, cid uint64) (models.Job, error)
+	AddJobDetails(ctx context.Context, jobData models.NewJob, cid uint64) (models.Job, error)
 	ViewAllJobs(ctx context.Context) ([]models.Job, error)
 	ViewJobById(ctx context.Context, jid uint64) (models.Job, error)
 }
