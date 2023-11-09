@@ -52,13 +52,13 @@ func (s *Service) compareAndCheck(applicationData models.UserApplication) (bool,
 	fmt.Println("=========================", applicationData.Job.Experience)
 	exp, err := strconv.Atoi(applicationData.Job.Experience)
 	if err != nil {
-		panic("error while parsing exp string from jobrequest")
+		return false, models.UserApplication{}, err
 	}
 	fmt.Println("1111111111111")
 
 	minexp, err := strconv.Atoi(val.MinExp)
 	if err != nil {
-		panic("error while parsing exp string from NewJob")
+		return false, models.UserApplication{}, err
 	}
 	fmt.Println("22222222")
 
@@ -74,13 +74,13 @@ func (s *Service) compareAndCheck(applicationData models.UserApplication) (bool,
 
 	np, err := strconv.Atoi(applicationData.Job.NoticePeriod)
 	if err != nil {
-		panic("error while parsing  np string from jobrequest")
+		return false, models.UserApplication{}, err
 	}
 	fmt.Println("4444444444444")
 
 	minnp, err := strconv.Atoi(val.MinNoticePeriod)
 	if err != nil {
-		panic("error while parsing  np string from NewJob")
+		return false, models.UserApplication{}, err
 	}
 	fmt.Println("555555555555")
 
