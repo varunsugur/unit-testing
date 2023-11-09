@@ -49,8 +49,19 @@ type Shift struct {
 }
 
 type UserApplication struct {
-	Name    string `json:"name"`
-	College string `json:"college"`
-	Jid     uint   `json:"jid"`
-	Job     NewJob `json:"newjob"`
+	Name    string     `json:"name"`
+	College string     `json:"college"`
+	Jid     uint       `json:"jid"`
+	Job     JobRequest `json:"jobRequest"`
+}
+
+type JobRequest struct {
+	Jobname        string `json:"jobName" validate:"required"`
+	NoticePeriod   string `json:"noticePeriod" validate:"required"`
+	Location       []uint `json:"location" `
+	Technology     []uint `json:"technology" `
+	Experience     string `json:"experience" validate:"required"`
+	Qualifications []uint `json:"qualifications"`
+	Shift          []uint `json:"shifts"`
+	JobType        string `json:"jobtype" validate:"required"`
 }

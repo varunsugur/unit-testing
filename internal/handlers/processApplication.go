@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
+
 	"golang/internal/auth"
 	"golang/internal/middlewares"
 	"golang/internal/models"
@@ -44,9 +44,9 @@ func (h *Handler) ProcessApplication(c *gin.Context) {
 		// 	"errors",http.StatusText(http.StatusInternalServerError),
 		// })
 	}
-	var jobData []models.UserApplication
+	var applicationDatas []models.UserApplication
 
-	err = json.NewDecoder(c.Request.Body).Decode(&jobData)
+	err = json.NewDecoder(c.Request.Body).Decode(&applicationDatas)
 	if err != nil {
 		log.Error().Err(err).Str("trace id", traceId)
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
@@ -54,7 +54,16 @@ func (h *Handler) ProcessApplication(c *gin.Context) {
 		})
 	}
 
-	fmt.Println(jobData)
-	c.JSON(http.StatusOK, jobData)
+	applicationDatas, err = h.service.ProccessApplication(ctx, applicationDatas)
+	if err != nil {
+		log.Error().Err(err).Str("trace id", traceId)
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"error": err,
+		})
+		return
+	}
+
+	// fmt.Println(jobData)
+	c.JSON(http.StatusOK, applicationDatas)
 
 }

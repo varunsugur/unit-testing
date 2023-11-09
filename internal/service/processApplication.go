@@ -2,7 +2,9 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"golang/internal/models"
+	"strconv"
 	"sync"
 )
 
@@ -47,17 +49,46 @@ func (s *Service) compareAndCheck(applicationData models.UserApplication) (bool,
 		cacheMap[applicationData.Jid] = jobData
 		val = jobData
 	}
-	if applicationData.Job.MinExp < val.MinExp {
+	fmt.Println("=========================", applicationData.Job.Experience)
+	exp, err := strconv.Atoi(applicationData.Job.Experience)
+	if err != nil {
+		panic("error while parsing exp string from jobrequest")
+	}
+	fmt.Println("1111111111111")
+
+	minexp, err := strconv.Atoi(val.MinExp)
+	if err != nil {
+		panic("error while parsing exp string from NewJob")
+	}
+	fmt.Println("22222222")
+
+	if exp < minexp {
 		return false, models.UserApplication{}, nil
 	}
+
 	if applicationData.Job.JobType != val.JobType {
 		return false, models.UserApplication{}, nil
 	}
-	if applicationData.Job.MinNoticePeriod < val.MinNoticePeriod {
+
+	fmt.Println("3333333333333")
+
+	np, err := strconv.Atoi(applicationData.Job.NoticePeriod)
+	if err != nil {
+		panic("error while parsing  np string from jobrequest")
+	}
+	fmt.Println("4444444444444")
+
+	minnp, err := strconv.Atoi(val.MinNoticePeriod)
+	if err != nil {
+		panic("error while parsing  np string from NewJob")
+	}
+	fmt.Println("555555555555")
+
+	if np < minnp {
 		return false, models.UserApplication{}, nil
 	}
 	count := 0
-	for _, v := range applicationData.Job.JobLocation {
+	for _, v := range applicationData.Job.Location {
 		for _, v1 := range val.JobLocation {
 			if v == v1.ID {
 				count++

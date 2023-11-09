@@ -3,8 +3,9 @@ package repository
 import (
 	"context"
 	"errors"
-	"github.com/rs/zerolog/log"
 	"golang/internal/models"
+
+	"github.com/rs/zerolog/log"
 )
 
 func (r *Repo) ViewJobDetailsBy(ctx context.Context, jid uint64) (models.Job, error) {
@@ -46,5 +47,25 @@ func (r *Repo) FindJob(ctx context.Context, cid uint64) ([]models.Job, error) {
 		log.Info().Err(result.Error).Send()
 		return nil, errors.New("could not find the company")
 	}
+	return jobData, nil
+}
+
+func (r *Repo) GetTheJobData(jobid uint) (models.Job, error) {
+	var jobData models.Job
+
+	// Preload related data using GORM's Preload method
+	result := r.Db.Preload("Company").
+		Preload("JobLocation").
+		Preload("Technology").
+		Preload("Qualifications").
+		Preload("Shift").
+		Where("id = ?", jobid).
+		Find(&jobData)
+
+	if result.Error != nil {
+		log.Info().Err(result.Error).Send()
+		return models.Job{}, result.Error
+	}
+
 	return jobData, nil
 }
