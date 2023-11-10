@@ -7,7 +7,6 @@ import (
 	"golang/internal/middlewares"
 	"golang/internal/models"
 	"net/http"
-	"strconv"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/rs/zerolog/log"
@@ -36,22 +35,22 @@ func (h *Handler) ProcessApplication(c *gin.Context) {
 		return
 	}
 
-	id := c.Param("cid")
-	_, err := strconv.ParseUint(id, 10, 64)
-	if err != nil {
-		log.Error().Msg("give proper cid")
-		// c.AbortWithStatusJSON(http.StatusInternalServerError,
-		// 	"errors",http.StatusText(http.StatusInternalServerError),
-		// })
-	}
+	// id := c.Param("cid")
+	// _, err := strconv.ParseUint(id, 10, 64)
+	// if err != nil {
+	// 	log.Error().Msg("give proper cid")
+	// c.AbortWithStatusJSON(http.StatusInternalServerError,
+	// 	"errors",http.StatusText(http.StatusInternalServerError),
+	// })
+	// }
 	var applicationDatas []models.UserApplication
-
-	err = json.NewDecoder(c.Request.Body).Decode(&applicationDatas)
+	err := json.NewDecoder(c.Request.Body).Decode(&applicationDatas)
 	if err != nil {
 		log.Error().Err(err).Str("trace id", traceId)
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"error": "please provide valid job details",
 		})
+		return
 	}
 
 	applicationDatas, err = h.service.ProccessApplication(ctx, applicationDatas)

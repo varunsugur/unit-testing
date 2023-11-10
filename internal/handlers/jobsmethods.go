@@ -37,6 +37,7 @@ func (h *Handler) AddJobs(c *gin.Context) {
 	cid, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, http.StatusText(http.StatusBadRequest))
+		return
 	}
 
 	var jobData models.NewJob
@@ -45,7 +46,7 @@ func (h *Handler) AddJobs(c *gin.Context) {
 	if err != nil {
 		log.Error().Err(err).Str("trace id", traceId)
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"error": "please provide valid name, location and field",
+			"error": "please provide valid jov details",
 		})
 		return
 	}
