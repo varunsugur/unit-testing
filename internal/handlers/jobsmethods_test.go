@@ -2,10 +2,12 @@ package handlers
 
 import (
 	"context"
+	"errors"
 	"strings"
 
 	"golang/internal/auth"
 	"golang/internal/middlewares"
+	"golang/internal/models"
 
 	"golang/internal/service"
 	"net/http"
@@ -82,12 +84,48 @@ func TestHandler_AddJobs(t *testing.T) {
 		// 	expectedStatusCode: http.StatusBadRequest,
 		// 	expectedResponse:   `"Bad Request"`,
 		// },
+		// {
+		// 	name: "error in validating the json",
+		// 	setup: func() (*gin.Context, *httptest.ResponseRecorder, service.UserService) {
+		// 		rr := httptest.NewRecorder()
+		// 		c, _ := gin.CreateTestContext(rr)
+		// 		httpRequest, _ := http.NewRequest(http.MethodGet, "http://test.com:8080", strings.NewReader(`{
+		// 			"name":"Software-Trainee",
+		// 			"budget":"5lack",
+		// 			"minNoticePeriod":"7",
+		// 			"maxNoticePeriod":"30",
+		// 			"jobLocation":[1,7 ],
+		// 			"technology":[1,5],
+		// 			"description": "Develop-Software Application and Code-Review",
+		// 			"minExp": "0",
+		// 			"maxExp": "4",
+		// 			"qualification":[3,4],
+		// 			"shift":[1],
+		// 			"jobType":"Full-Time
+		// 		}`))
+		// 		ctx := httpRequest.Context()
+		// 		ctx = context.WithValue(ctx, middlewares.TraceIdKey, "123")
+		// 		ctx = context.WithValue(ctx, auth.Key, jwt.RegisteredClaims{})
+		// 		httpRequest = httpRequest.WithContext(ctx)
+		// 		c.Params = append(c.Params, gin.Param{Key: "id", Value: "123"})
+		// 		c.Request = httpRequest
+
+		// 		mc := gomock.NewController(t)
+		// 		ms := service.NewMockUserService(mc)
+
+		// 		return c, rr, ms
+		// 	},
+		// 	expectedStatusCode: http.StatusBadRequest,
+		// 	expectedResponse:   `"Bad Request"`,
+		// },
+
 		{
-			name: "error in validating the json",
+			name: "error ferom service layer",
 			setup: func() (*gin.Context, *httptest.ResponseRecorder, service.UserService) {
 				rr := httptest.NewRecorder()
 				c, _ := gin.CreateTestContext(rr)
-				httpRequest, _ := http.NewRequest(http.MethodGet, "http://test.com:8080", strings.NewReader(`{
+				httpRequest, _ := http.NewRequest(http.MethodGet, "http://test.com", strings.NewReader(`
+				{
 					"name":"Software-Trainee",
 					"budget":"5lack",
 					"minNoticePeriod":"7",
@@ -99,8 +137,9 @@ func TestHandler_AddJobs(t *testing.T) {
 					"maxExp": "4",
 					"qualification":[3,4],
 					"shift":[1],
-					"jobType":"Full-Time
-				}`))
+					"jobType":"Full-Time"
+				}`,
+				))
 				ctx := httpRequest.Context()
 				ctx = context.WithValue(ctx, middlewares.TraceIdKey, "123")
 				ctx = context.WithValue(ctx, auth.Key, jwt.RegisteredClaims{})
@@ -111,89 +150,52 @@ func TestHandler_AddJobs(t *testing.T) {
 				mc := gomock.NewController(t)
 				ms := service.NewMockUserService(mc)
 
+				ms.EXPECT().AddJobDetails(c.Request.Context(), gomock.Any(), gomock.Any()).Return(models.ResponseJob{}, errors.New("test error from mock function")).AnyTimes()
+
 				return c, rr, ms
 			},
 			expectedStatusCode: http.StatusBadRequest,
 			expectedResponse:   `"Bad Request"`,
 		},
 
-		// {
-		// 	name: "error ferom service layer",
-		// 	setup: func() (*gin.Context, *httptest.ResponseRecorder, service.UserService) {
-		// 		rr := httptest.NewRecorder()
-		// 		c, _ := gin.CreateTestContext(rr)
-		// 		httpRequest, _ := http.NewRequest(http.MethodGet, "http://test.com", strings.NewReader(`
-		// 		{
-		// 			"name":"Software-Trainee",
-		// 			"budget":"5lack",
-		// 			"minNoticePeriod":"7",
-		// 			"maxNoticePeriod":"30",
-		// 			"jobLocation":[1,7 ],
-		// 			"technology":[1,5],
-		// 			"description": "Develop-Software Application and Code-Review",
-		// 			"minExp": "0",
-		// 			"maxExp": "4",
-		// 			"qualification":[3,4],
-		// 			"shift":[1],
-		// 			"jobType":"Full-Time"
-		// 		}`,
-		// 		))
-		// 		ctx := httpRequest.Context()
-		// 		ctx = context.WithValue(ctx, middlewares.TraceIdKey, "123")
-		// 		ctx = context.WithValue(ctx, auth.Key, jwt.RegisteredClaims{})
-		// 		httpRequest = httpRequest.WithContext(ctx)
-		// 		c.Params = append(c.Params, gin.Param{Key: "id", Value: "123"})
-		// 		c.Request = httpRequest
+		{
+			name: "success from service layer",
+			setup: func() (*gin.Context, *httptest.ResponseRecorder, service.UserService) {
+				rr := httptest.NewRecorder()
+				c, _ := gin.CreateTestContext(rr)
+				httpRequest, _ := http.NewRequest(http.MethodGet, "http://test.com", strings.NewReader(`{
+					"name":"Software-Trainee",
+					"budget":"5lack",
+					"minNoticePeriod":"7",
+					"maxNoticePeriod":"30",
+					"jobLocation":[1,7 ],
+					"technology":[1,5],
+					"description": "Develop-Software Application and Code-Review",
+					"minExp": "0",
+					"maxExp": "4",
+					"qualification":[3,4],
+					"shift":[1],
+					"jobType":"Full-Time"
+				}`,
+				))
+				ctx := httpRequest.Context()
+				ctx = context.WithValue(ctx, middlewares.TraceIdKey, "123")
+				ctx = context.WithValue(ctx, auth.Key, jwt.RegisteredClaims{})
+				httpRequest = httpRequest.WithContext(ctx)
+				c.Params = append(c.Params, gin.Param{Key: "id", Value: "123"})
 
-		// 		mc := gomock.NewController(t)
-		// 		ms := service.NewMockUserService(mc)
+				c.Request = httpRequest
 
-		// 		ms.EXPECT().AddJobDetails(c.Request.Context(), gomock.Any(), gomock.Any()).Return(models.ResponseJob{}, errors.New("test error from mock function")).AnyTimes()
-
-		// 		return c, rr, ms
-		// 	},
-		// 	expectedStatusCode: http.StatusBadRequest,
-		// 	expectedResponse:   `"Bad Request"`,
-		// },
-
-		// {
-		// 	name: "success from service layer",
-		// 	setup: func() (*gin.Context, *httptest.ResponseRecorder, service.UserService) {
-		// 		rr := httptest.NewRecorder()
-		// 		c, _ := gin.CreateTestContext(rr)
-		// 		httpRequest, _ := http.NewRequest(http.MethodGet, "http://test.com", strings.NewReader(`{
-		// 			"name":"Software-Trainee",
-		// 			"budget":"5lack",
-		// 			"minNoticePeriod":"7",
-		// 			"maxNoticePeriod":"30",
-		// 			"jobLocation":[1,7 ],
-		// 			"technology":[1,5],
-		// 			"description": "Develop-Software Application and Code-Review",
-		// 			"minExp": "0",
-		// 			"maxExp": "4",
-		// 			"qualification":[3,4],
-		// 			"shift":[1],
-		// 			"jobType":"Full-Time"
-		// 		}`,
-		// 		))
-		// 		ctx := httpRequest.Context()
-		// 		ctx = context.WithValue(ctx, middlewares.TraceIdKey, "123")
-		// 		ctx = context.WithValue(ctx, auth.Key, jwt.RegisteredClaims{})
-		// 		httpRequest = httpRequest.WithContext(ctx)
-		// 		c.Params = append(c.Params, gin.Param{Key: "id", Value: "123"})
-
-		// 		c.Request = httpRequest
-
-		// 		mc := gomock.NewController(t)
-		// 		ms := service.NewMockUserService(mc)
-		// 		ms.EXPECT().AddJobDetails(c.Request.Context(), gomock.Any(), gomock.Any()).Return(models.ResponseJob{
-		// 			Id: 1,
-		// 		}, nil).AnyTimes()
-		// 		return c, rr, ms
-		// 	},
-		// 	expectedStatusCode: http.StatusOK,
-		// 	expectedResponse:   `{"responseId":1}`,
-		// },
+				mc := gomock.NewController(t)
+				ms := service.NewMockUserService(mc)
+				ms.EXPECT().AddJobDetails(c.Request.Context(), gomock.Any(), gomock.Any()).Return(models.ResponseJob{
+					Id: 1,
+				}, nil).AnyTimes()
+				return c, rr, ms
+			},
+			expectedStatusCode: http.StatusOK,
+			expectedResponse:   `{"responseId":1}`,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

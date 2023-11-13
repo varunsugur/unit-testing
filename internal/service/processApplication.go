@@ -10,6 +10,8 @@ import (
 
 func (s *Service) ProccessApplication(ctx context.Context, applicationData []models.UserApplication) ([]models.UserApplication, error) {
 	var wg = new(sync.WaitGroup)
+	ch := make(chan models.UserApplication)
+
 	var finalData []models.UserApplication
 	for _, v := range applicationData {
 		wg.Add(1)
@@ -20,7 +22,7 @@ func (s *Service) ProccessApplication(ctx context.Context, applicationData []mod
 				return
 			}
 			if check {
-				finalData = append(finalData, v)
+				ch <- v
 			}
 		}(v)
 
@@ -33,7 +35,16 @@ func (s *Service) ProccessApplication(ctx context.Context, applicationData []mod
 		// 	finalData = append(finalData, v)
 		// }
 	}
-	wg.Wait()
+
+	go func() {
+		wg.Wait()
+		close(ch)
+	}()
+
+	for v := range ch {
+		finalData = append(finalData, v)
+	}
+
 	return finalData, nil
 }
 
