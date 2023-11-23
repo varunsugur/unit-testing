@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"golang/internal/auth"
+	"golang/internal/cache"
 	"golang/internal/models"
 	"golang/internal/repository"
 	"reflect"
@@ -105,7 +106,7 @@ func TestService_AddJobDetails(t *testing.T) {
 			mr := repository.NewMockUserRepo(mc)
 
 			mr.EXPECT().CreateJob(gomock.Any(), gomock.Any()).Return(tt.mockResponse()).AnyTimes()
-			svc, err := NewService(mr, &auth.Auth{})
+			svc, err := NewService(mr, &auth.Auth{}, &cache.MockCache{})
 			if err != nil {
 				t.Errorf("error is initializing the repo layer")
 				return

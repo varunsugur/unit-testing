@@ -1,0 +1,7 @@
+docker build -t job-portal:latest .
+
+docker container run --name job -d -p 8080:8080 job-portal
+
+ docker run -d --name postgres -e POSTGRES_PASSWORD=admin -e POSTGRES_USER=postgres -e POSTGRES_DB=postgres --network=portal job-portal
+
+ docker network create "(name of netwrok)"

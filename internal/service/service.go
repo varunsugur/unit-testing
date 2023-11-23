@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"golang/internal/auth"
+	"golang/internal/cache"
 	"golang/internal/models"
 	"golang/internal/repository"
 )
@@ -11,6 +12,7 @@ import (
 type Service struct {
 	UserRepo repository.UserRepo
 	auth     *auth.Auth
+	rdb      cache.Cache
 }
 
 //go:generate mockgen -source=service.go -destination=service_mock.go -package=service
@@ -30,12 +32,13 @@ type UserService interface {
 	ProccessApplication(ctx context.Context, applicationData []models.UserApplication) ([]models.UserApplication, error)
 }
 
-func NewService(userRepo repository.UserRepo, a *auth.Auth) (UserService, error) {
+func NewService(userRepo repository.UserRepo, a *auth.Auth, rdb cache.Cache) (UserService, error) {
 	if userRepo == nil {
 		return nil, errors.New("interface cannot be null")
 	}
 	return &Service{
 		UserRepo: userRepo,
 		auth:     a,
+		rdb:      rdb,
 	}, nil
 }

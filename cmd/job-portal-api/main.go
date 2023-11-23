@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"golang/internal/auth"
+	"golang/internal/cache"
 	"golang/internal/database"
 	"golang/internal/handlers"
 	"golang/internal/repository"
@@ -27,7 +28,7 @@ func main() {
 }
 
 func StartApp() error {
-	privatePem, err := os.ReadFile(`C:\Users\ORR Training 8\Desktop\jportal\unit-testing\private.pem`)
+	privatePem, err := os.ReadFile(`private.pem`)
 	if err != nil {
 		return fmt.Errorf("reading private pem %w", err)
 	}
@@ -37,7 +38,7 @@ func StartApp() error {
 		return fmt.Errorf("parsing private key %w", err)
 	}
 
-	publicPem, err := os.ReadFile(`C:\Users\ORR Training 8\Desktop\jportal\unit-testing\pubkey.pem`)
+	publicPem, err := os.ReadFile(`pubkey.pem`)
 	if err != nil {
 		return fmt.Errorf("reading public pem %w", err)
 	}
@@ -71,13 +72,17 @@ func StartApp() error {
 		return fmt.Errorf("database is not connected: %w", err)
 	}
 
+	rdb := database.ConnectToRedis()
+
+	redisLayer := cache.NewRDBLayer(rdb)
+
 	// initialize the repository layer
 	repo, err := repository.NewRepository(db)
 	if err != nil {
 		return err
 	}
 
-	svc, err := service.NewService(repo, a)
+	svc, err := service.NewService(repo, a, redisLayer)
 	if err != nil {
 		return err
 	}
