@@ -11,7 +11,7 @@ import (
 func GenerateOTP(email string) (string, error) {
 	// Sender's email address and password
 	from := "varun.sugur03@gmail.com"
-	password := "crdl rpwc ercw rjrr"
+	password := ""
 
 	// Recipient's email address
 	to := email
