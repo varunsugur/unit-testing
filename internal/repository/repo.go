@@ -28,6 +28,8 @@ type UserRepo interface {
 	ViewJobDetailsBy(ctx context.Context, jid uint64) (models.Job, error)
 
 	GetTheJobData(jobid uint) (models.Job, error)
+
+	VerifyUser(vu models.VerifyUser) (models.User, error)
 }
 
 func NewRepository(db *gorm.DB) (UserRepo, error) {

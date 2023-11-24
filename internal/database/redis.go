@@ -1,12 +1,16 @@
 package database
 
-import "github.com/redis/go-redis/v9"
+import (
+	"golang/config"
 
-func ConnectToRedis() *redis.Client {
+	"github.com/redis/go-redis/v9"
+)
+
+func ConnectToRedis(cfg config.Config) *redis.Client {
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "", //no password set
-		DB:       0,  //use default db
+		Addr:     cfg.RedisConfig.RedisPost,
+		Password: cfg.RedisConfig.RedisPassword, //no password set
+		DB:       cfg.RedisConfig.RedisDB,       //use default db
 	})
 	return rdb
 }

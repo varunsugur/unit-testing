@@ -30,6 +30,8 @@ type UserService interface {
 	ViewJobById(ctx context.Context, jid uint64) (models.Job, error)
 
 	ProccessApplication(ctx context.Context, applicationData []models.UserApplication) ([]models.UserApplication, error)
+
+	VerifyUser(ctx context.Context, vu models.VerifyUser) error
 }
 
 func NewService(userRepo repository.UserRepo, a *auth.Auth, rdb cache.Cache) (UserService, error) {

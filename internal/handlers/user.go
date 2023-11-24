@@ -96,3 +96,34 @@ func (h *Handler) Signin(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"token": token})
 
 }
+
+func (h *Handler) SendOTP(c *gin.Context) {
+	ctx := c.Request.Context()
+
+	traceId, ok := ctx.Value(middlewares.TraceIdKey).(string)
+	log := zerolog.New(os.Stdout).With().Timestamp().Logger()
+	if !ok {
+		log.Error().Msg("missing context")
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"msg": http.StatusInternalServerError})
+		return
+	}
+
+	var data models.VerifyUser
+
+	err := json.NewDecoder(c.Request.Body).Decode(&data)
+	if err != nil {
+		log.Error().Err(err).Str("Trace is ", traceId)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"Msg": http.StatusInternalServerError})
+		return
+	}
+
+	err = h.service.VerifyUser(ctx, data)
+	if err != nil {
+		log.Error().Err(err).Str("trace id", traceId)
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "email sent successfully"})
+
+}

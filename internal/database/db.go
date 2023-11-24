@@ -1,14 +1,17 @@
 package database
 
 import (
+	"fmt"
+	"golang/config"
 	"golang/internal/models"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-func Open() (*gorm.DB, error) {
-	dsn := "host=postgres user=postgres password=admin dbname=jportal port=5432 sslmode=disable"
+func Open(cfg config.Config) (*gorm.DB, error) {
+	// dsn := "host=postgres user=postgres password=admin dbname=jportal port=5432 sslmode=disable"
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=%s", cfg.DatabaseConfig.DB_Host, cfg.DatabaseConfig.DB_User, cfg.DatabaseConfig.DB_Pswd, cfg.DatabaseConfig.DB_Name, cfg.DatabaseConfig.DB_Port, cfg.DatabaseConfig.DB_Sslmode)
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {

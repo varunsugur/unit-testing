@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"golang/config"
 	"golang/internal/auth"
 	"golang/internal/cache"
 	"golang/internal/database"
@@ -28,21 +29,23 @@ func main() {
 }
 
 func StartApp() error {
-	privatePem, err := os.ReadFile(`private.pem`)
-	if err != nil {
-		return fmt.Errorf("reading private pem %w", err)
-	}
+	cfg := config.GetConfig()
 
+	// privatePem, err := os.ReadFile(`private.pem`)
+	// if err != nil {
+	// 	return fmt.Errorf("reading private pem %w", err)
+	// }
+	privatePem := []byte(cfg.AuthConfig.PrivateKey)
 	privateKey, err := jwt.ParseRSAPrivateKeyFromPEM(privatePem)
 	if err != nil {
 		return fmt.Errorf("parsing private key %w", err)
 	}
 
-	publicPem, err := os.ReadFile(`pubkey.pem`)
-	if err != nil {
-		return fmt.Errorf("reading public pem %w", err)
-	}
-
+	// publicPem, err := os.ReadFile(`pubkey.pem`)
+	// if err != nil {
+	// 	return fmt.Errorf("reading public pem %w", err)
+	// }
+	publicPem := []byte(cfg.AuthConfig.PublicKey)
 	publicKey, err := jwt.ParseRSAPublicKeyFromPEM(publicPem)
 	if err != nil {
 		return fmt.Errorf("parsing public pem %w", err)
@@ -54,7 +57,7 @@ func StartApp() error {
 	}
 
 	log.Info().Msg("main started : initialozing data")
-	db, err := database.Open()
+	db, err := database.Open(cfg)
 	if err != nil {
 		return fmt.Errorf("error in opening the database connection :%w", err)
 	}
@@ -72,7 +75,7 @@ func StartApp() error {
 		return fmt.Errorf("database is not connected: %w", err)
 	}
 
-	rdb := database.ConnectToRedis()
+	rdb := database.ConnectToRedis(cfg)
 
 	redisLayer := cache.NewRDBLayer(rdb)
 
@@ -88,10 +91,10 @@ func StartApp() error {
 	}
 
 	api := http.Server{
-		Addr:         ":8080",
-		WriteTimeout: 8000 * time.Second,
-		ReadTimeout:  8000 * time.Second,
-		IdleTimeout:  8000 * time.Second,
+		Addr:         fmt.Sprintf(":%s", cfg.AppConfig.Port),
+		WriteTimeout: time.Duration(cfg.AppConfig.WriteTimeout) * time.Second,
+		ReadTimeout:  time.Duration(cfg.AppConfig.ReadTimeout) * time.Second,
+		IdleTimeout:  time.Duration(cfg.AppConfig.IdleTimeout) * time.Second,
 		Handler:      handlers.API(a, svc),
 	}
 

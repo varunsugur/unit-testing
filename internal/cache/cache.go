@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"golang/internal/models"
 	"strconv"
+	"time"
 
 	"github.com/redis/go-redis/v9"
 )
@@ -19,6 +20,8 @@ type RDBLayer struct {
 type Cache interface {
 	AddToCache(ctx context.Context, jid uint, jobdata models.Job) error
 	GetTheCacheData(ctx context.Context, jid uint) (models.Job, error)
+
+	AddtoOTPCache(ctx context.Context, email string, otp string) error
 }
 
 func NewRDBLayer(rdb *redis.Client) Cache {
@@ -54,4 +57,9 @@ func (r *RDBLayer) GetTheCacheData(ctx context.Context, jid uint) (models.Job, e
 		return models.Job{}, err
 	}
 	return jobData, nil
+}
+
+func (r *RDBLayer) AddtoOTPCache(ctx context.Context, email string, otp string) error {
+	err := r.rdb.Set(ctx, email, otp, 5*time.Minute).Err()
+	return err
 }

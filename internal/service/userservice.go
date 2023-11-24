@@ -25,6 +25,7 @@ func (s *Service) UserSignup(ctx context.Context, nu models.NewUser) (models.Use
 	u := models.User{
 		Name:         nu.Name,
 		Email:        nu.Email,
+		DOB:          nu.DOB,
 		PasswordHash: string(hashedPassword),
 	}
 	userDetails, err := s.UserRepo.CreatUser(ctx, u)
@@ -61,4 +62,27 @@ func (s *Service) UserSignin(ctx context.Context, user models.UserLogin) (string
 
 	return token, nil
 
+}
+
+func (s *Service) VerifyUser(ctx context.Context, vu models.VerifyUser) error {
+	details, err := s.UserRepo.VerifyUser(vu)
+	if err != nil {
+		return errors.New("email is not found")
+
+	}
+
+	if vu.DOB != details.DOB {
+		return errors.New("enter correct date of birth")
+	}
+	otp, err := pkg.GenerateOTP(vu.UserEmail)
+	if err != nil {
+		return errors.New("could not send otp to verified email")
+	}
+
+	err = s.rdb.AddtoOTPCache(ctx, vu.UserEmail, otp)
+	if err != nil {
+		return errors.New("failed to store in cache")
+	}
+
+	return nil
 }
