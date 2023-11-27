@@ -36,6 +36,7 @@ func (h *Handler) AddJobs(c *gin.Context) {
 
 	cid, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {
+		log.Error().Err(err).Msg("error in parsing cid")
 		c.AbortWithStatusJSON(http.StatusBadRequest, http.StatusText(http.StatusBadRequest))
 		return
 	}
@@ -61,7 +62,6 @@ func (h *Handler) AddJobs(c *gin.Context) {
 
 	jobDetails, err := h.service.AddJobDetails(ctx, jobData, cid)
 	if err != nil {
-		log.Error().Err(err).Str("trace id", traceId)
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})
@@ -93,12 +93,12 @@ func (h *Handler) ViewJobByID(c *gin.Context) {
 
 	jid, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {
+		log.Error().Err(err).Msg("error in parsing jid")
 		c.AbortWithStatusJSON(http.StatusBadRequest, http.StatusText(http.StatusBadRequest))
 	}
 
 	jobData, err := h.service.ViewJobById(ctx, jid)
 	if err != nil {
-		log.Error().Err(err).Str("trace id", traceid)
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})
@@ -127,7 +127,6 @@ func (h *Handler) ViewAllJobs(c *gin.Context) {
 	}
 	jobDatas, err := h.service.ViewAllJobs(ctx)
 	if err != nil {
-		log.Error().Err(err).Str("trace id", traceid)
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})
@@ -159,12 +158,12 @@ func (h *Handler) ViewJob(c *gin.Context) {
 
 	cid, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {
+		log.Error().Err(err).Msg("error in parsing cid")
 		c.AbortWithStatusJSON(http.StatusBadRequest, http.StatusText(http.StatusBadRequest))
 	}
 
 	jobData, err := h.service.ViewJob(ctx, cid)
 	if err != nil {
-		log.Error().Err(err).Str("trace id", traceid)
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})

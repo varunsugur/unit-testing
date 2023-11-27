@@ -53,6 +53,49 @@ func (mr *MockCacheMockRecorder) AddToCache(ctx, jid, jobdata any) *gomock.Call 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddToCache", reflect.TypeOf((*MockCache)(nil).AddToCache), ctx, jid, jobdata)
 }
 
+// AddtoOTPCache mocks base method.
+func (m *MockCache) AddtoOTPCache(ctx context.Context, email, otp string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "AddtoOTPCache", ctx, email, otp)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// AddtoOTPCache indicates an expected call of AddtoOTPCache.
+func (mr *MockCacheMockRecorder) AddtoOTPCache(ctx, email, otp any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddtoOTPCache", reflect.TypeOf((*MockCache)(nil).AddtoOTPCache), ctx, email, otp)
+}
+
+// DeleteCacheOtp mocks base method.
+func (m *MockCache) DeleteCacheOtp(ctx context.Context, email string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteCacheOtp", ctx, email)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteCacheOtp indicates an expected call of DeleteCacheOtp.
+func (mr *MockCacheMockRecorder) DeleteCacheOtp(ctx, email any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteCacheOtp", reflect.TypeOf((*MockCache)(nil).DeleteCacheOtp), ctx, email)
+}
+
+// GetCacheOtp mocks base method.
+func (m *MockCache) GetCacheOtp(ctx context.Context, email string) (string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetCacheOtp", ctx, email)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetCacheOtp indicates an expected call of GetCacheOtp.
+func (mr *MockCacheMockRecorder) GetCacheOtp(ctx, email any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCacheOtp", reflect.TypeOf((*MockCache)(nil).GetCacheOtp), ctx, email)
+}
+
 // GetTheCacheData mocks base method.
 func (m *MockCache) GetTheCacheData(ctx context.Context, jid uint) (models.Job, error) {
 	m.ctrl.T.Helper()

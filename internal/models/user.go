@@ -29,3 +29,10 @@ type VerifyUser struct {
 	// UserEmail string `json:"useremail" validate:"required"`
 	DOB string `json:"dob" validate:"required"`
 }
+
+type ResetDetails struct {
+	Email           string `json:"email" validate:"required"`
+	NewPassword     string `json:"password" validate:"required"`
+	ConfirmPassword string `json:"confirmPassword" validate:"required"`
+	OTP             string `json:"otp" validate:"required"`
+}

@@ -144,6 +144,35 @@ func (mr *MockUserRepoMockRecorder) GetTheJobData(jobid any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTheJobData", reflect.TypeOf((*MockUserRepo)(nil).GetTheJobData), jobid)
 }
 
+// ResetPassword mocks base method.
+func (m *MockUserRepo) ResetPassword(email, resetpassword string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ResetPassword", email, resetpassword)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ResetPassword indicates an expected call of ResetPassword.
+func (mr *MockUserRepoMockRecorder) ResetPassword(email, resetpassword any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ResetPassword", reflect.TypeOf((*MockUserRepo)(nil).ResetPassword), email, resetpassword)
+}
+
+// VerifyUser mocks base method.
+func (m *MockUserRepo) VerifyUser(vu models.VerifyUser) (models.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "VerifyUser", vu)
+	ret0, _ := ret[0].(models.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// VerifyUser indicates an expected call of VerifyUser.
+func (mr *MockUserRepoMockRecorder) VerifyUser(vu any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "VerifyUser", reflect.TypeOf((*MockUserRepo)(nil).VerifyUser), vu)
+}
+
 // ViewCompanies mocks base method.
 func (m *MockUserRepo) ViewCompanies(ctx context.Context) ([]models.Company, error) {
 	m.ctrl.T.Helper()

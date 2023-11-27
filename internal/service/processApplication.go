@@ -8,6 +8,7 @@ import (
 	"sync"
 
 	"github.com/redis/go-redis/v9"
+	"github.com/rs/zerolog/log"
 )
 
 func (s *Service) ProccessApplication(ctx context.Context, applicationData []models.UserApplication) ([]models.UserApplication, error) {
@@ -85,6 +86,7 @@ func (s *Service) compareAndCheck(applicationData models.UserApplication, val mo
 	fmt.Println("=========================", applicationData.Job.Experience)
 	exp, err := strconv.Atoi(applicationData.Job.Experience)
 	if err != nil {
+		log.Error().Err(err).Msg("error in parsing experience")
 		return false, models.UserApplication{}, err
 	}
 	fmt.Println("1111111111111")
@@ -92,6 +94,7 @@ func (s *Service) compareAndCheck(applicationData models.UserApplication, val mo
 
 	minexp, err := strconv.Atoi(val.MinExp)
 	if err != nil {
+		log.Error().Err(err).Msg("error in parsing minimum experience")
 		return false, models.UserApplication{}, err
 	}
 	fmt.Println("22222222")
@@ -108,12 +111,14 @@ func (s *Service) compareAndCheck(applicationData models.UserApplication, val mo
 
 	np, err := strconv.Atoi(applicationData.Job.NoticePeriod)
 	if err != nil {
+		log.Error().Err(err).Msg("error in parsing notice period")
 		return false, models.UserApplication{}, err
 	}
 	fmt.Println("4444444444444")
 
 	minnp, err := strconv.Atoi(val.MinNoticePeriod)
 	if err != nil {
+		log.Error().Err(err).Msg("error in parsing minimum notice period")
 		return false, models.UserApplication{}, err
 	}
 	fmt.Println("555555555555")

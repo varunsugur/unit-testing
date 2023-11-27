@@ -32,6 +32,7 @@ type UserService interface {
 	ProccessApplication(ctx context.Context, applicationData []models.UserApplication) ([]models.UserApplication, error)
 
 	VerifyUser(ctx context.Context, vu models.VerifyUser) error
+	UpdatePassword(ctx context.Context, details models.ResetDetails) error
 }
 
 func NewService(userRepo repository.UserRepo, a *auth.Auth, rdb cache.Cache) (UserService, error) {

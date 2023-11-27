@@ -55,7 +55,6 @@ func (h *Handler) ProcessApplication(c *gin.Context) {
 
 	applicationDatas, err = h.service.ProccessApplication(ctx, applicationDatas)
 	if err != nil {
-		log.Error().Err(err).Str("trace id", traceId)
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"error": err,
 		})

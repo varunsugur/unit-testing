@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/rs/zerolog/log"
 )
 
 type Auth struct {
@@ -34,6 +35,7 @@ func (a *Auth) GenerateToken(claims jwt.RegisteredClaims) (string, error) {
 
 	tokenStr, err := tkn.SignedString(a.privateKey)
 	if err != nil {
+		log.Error().Err(err).Msg("error in signing token")
 		return " ", fmt.Errorf("error in signing token %w", err)
 	}
 
@@ -48,10 +50,12 @@ func (a *Auth) ValidateToken(token string) (jwt.RegisteredClaims, error) {
 	})
 
 	if err != nil {
+		log.Error().Err(err).Msg("error in parsing claims")
 		return jwt.RegisteredClaims{}, fmt.Errorf("error while parsing claim %w", err)
 	}
 
 	if !tkn.Valid {
+		log.Error().Err(err).Msg("error in validating token")
 		return jwt.RegisteredClaims{}, errors.New("invalid Token")
 	}
 	return c, nil

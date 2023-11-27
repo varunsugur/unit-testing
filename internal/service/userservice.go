@@ -11,7 +11,7 @@ import (
 	"golang/internal/pkg"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/rs/zerolog/log"
+	// "github.com/rs/zerolog/log"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -44,7 +44,6 @@ func (s *Service) UserSignin(ctx context.Context, user models.UserLogin) (string
 
 	err = pkg.CheckHashedPassword(user.Password, userDetails.PasswordHash)
 	if err != nil {
-		log.Error().Err(err).Send()
 		return "", errors.New("entered password is wrong")
 	}
 
@@ -85,4 +84,35 @@ func (s *Service) VerifyUser(ctx context.Context, vu models.VerifyUser) error {
 	}
 
 	return nil
+}
+
+func (s *Service) UpdatePassword(ctx context.Context, details models.ResetDetails) error {
+
+	if details.NewPassword != details.ConfirmPassword {
+		return errors.New("newpassword and confirm password are not same")
+	}
+
+	otp, err := s.rdb.GetCacheOtp(ctx, details.Email)
+	if err != nil {
+		return err
+	}
+
+	if otp != details.OTP {
+		return errors.New("otp mismatched")
+	}
+
+	// err = s.rdb.DeleteCacheOtp(ctx, details.Email)
+	// if err != nil {
+	// 	return errors.New()
+	// }
+
+	hashPassword, err := pkg.HashPassword(details.NewPassword)
+	if err != nil {
+		return errors.New("failed to hash password")
+	}
+
+	s.UserRepo.ResetPassword(details.Email, hashPassword)
+	// g
+	return nil
+
 }

@@ -30,6 +30,7 @@ type UserRepo interface {
 	GetTheJobData(jobid uint) (models.Job, error)
 
 	VerifyUser(vu models.VerifyUser) (models.User, error)
+	ResetPassword(email string, resetpassword string) error
 }
 
 func NewRepository(db *gorm.DB) (UserRepo, error) {

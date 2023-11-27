@@ -37,7 +37,7 @@ func (h *Handler) Signup(c *gin.Context) {
 	traceId, ok := ctx.Value(middlewares.TraceIdKey).(string)
 	log := zerolog.New(os.Stdout).With().Timestamp().Logger()
 	if !ok {
-		log.Error().Msg("missing context")
+		log.Error().Msg("missing trace id")
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"msg": http.StatusInternalServerError})
 		return
 
@@ -55,6 +55,7 @@ func (h *Handler) Signup(c *gin.Context) {
 	err = validate.Struct(nu)
 
 	if err != nil {
+		log.Error().Err(err).Msg("could not validate struct")
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"Msg": "please provide valid username, email and password"})
 		return
 	}
@@ -73,7 +74,7 @@ func (h *Handler) Signin(c *gin.Context) {
 	traceId, ok := ctx.Value(middlewares.TraceIdKey).(string)
 	log := zerolog.New(os.Stdout).With().Timestamp().Logger()
 	if !ok {
-		log.Error().Msg("missing context")
+		log.Error().Msg("missing traceid")
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"msg": http.StatusInternalServerError})
 		return
 	}
@@ -89,7 +90,6 @@ func (h *Handler) Signin(c *gin.Context) {
 
 	token, err := h.service.UserSignin(ctx, u)
 	if err != nil {
-		log.Error().Err(err).Str("trace id", traceId)
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -126,4 +126,34 @@ func (h *Handler) SendOTP(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "email sent successfully"})
 
+}
+
+func (h *Handler) UpdatePassword(c *gin.Context) {
+	ctx := c.Request.Context()
+
+	traceId, ok := ctx.Value(middlewares.TraceIdKey).(string)
+	log := zerolog.New(os.Stdout).With().Timestamp().Logger()
+	if !ok {
+		log.Error().Msg("missing context")
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"msg": http.StatusInternalServerError})
+		return
+	}
+
+	var details models.ResetDetails
+
+	err := json.NewDecoder(c.Request.Body).Decode(&details)
+	if err != nil {
+		log.Error().Err(err).Str("Trace id ", traceId)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"Msg": http.StatusInternalServerError})
+		return
+	}
+
+	err = h.service.UpdatePassword(ctx, details)
+	if err != nil {
+		log.Error().Err(err).Str("traceid", traceId)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"msg": http.StatusInternalServerError})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"messege": "password updated successfully"})
 }

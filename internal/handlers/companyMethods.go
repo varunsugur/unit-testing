@@ -57,7 +57,6 @@ func (h *Handler) AddCompany(c *gin.Context) {
 	}
 	companyData, err := h.service.AddCompanyDetails(ctx, comapanyData)
 	if err != nil {
-		log.Error().Err(err).Str("trace id", traceId)
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})
@@ -88,7 +87,6 @@ func (h *Handler) ViewAllCompanies(c *gin.Context) {
 	}
 	companyDetails, err := h.service.ViewAllCompanies(ctx)
 	if err != nil {
-		log.Error().Err(err).Str("trace id", traceId)
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})
@@ -122,12 +120,12 @@ func (h *Handler) ViewCompany(c *gin.Context) {
 	cid, err := strconv.ParseUint(id, 10, 64)
 
 	if err != nil {
+		log.Error().Err(err).Msg("error in parsing cid")
 		c.AbortWithStatusJSON(http.StatusBadRequest, http.StatusText(http.StatusBadRequest))
 	}
 
 	companyDetail, err := h.service.ViewCompanyDetail(ctx, cid)
 	if err != nil {
-		log.Error().Err(err).Str("trace id", traceId)
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})

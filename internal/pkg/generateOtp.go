@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"errors"
 	"fmt"
+	"github.com/rs/zerolog/log"
 	"math/big"
 	"net/smtp"
 )
@@ -11,7 +12,7 @@ import (
 func GenerateOTP(email string) (string, error) {
 	// Sender's email address and password
 	from := "varun.sugur03@gmail.com"
-	password := ""
+	password := "lhtj mbsq ztiy iann"
 
 	// Recipient's email address
 	to := email
@@ -32,6 +33,7 @@ func GenerateOTP(email string) (string, error) {
 	smtpAddr := fmt.Sprintf("%s:%d", smtpServer, smtpPort)
 	err := smtp.SendMail(smtpAddr, auth, from, []string{to}, message)
 	if err != nil {
+		log.Error().Err(err).Msg("error in sending mail")
 		fmt.Println("Error sending email:", err)
 
 		return "", errors.New("mail is not sent")
@@ -49,6 +51,7 @@ func generateOTP() string {
 		// Generate a random number between 0 and 9
 		randomNumber, err := rand.Int(rand.Reader, big.NewInt(10))
 		if err != nil {
+			log.Error().Err(err).Msg("error in generating random number")
 			fmt.Println("Error generating random number:", err)
 			return ""
 		}
